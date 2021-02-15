@@ -1,10 +1,7 @@
-﻿using System;
+﻿using Example.Abstract;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Example.Abstract;
-using System.IO;
 
 namespace Example.Reader
 {
@@ -14,7 +11,7 @@ namespace Example.Reader
         public override ReaderDirAbstract Preview { set; get; }
         public override List<string> DirectoryFiles { protected set; get; }
         public override List<string> ListFiles { protected set; get; }
-     
+
         public override void Create()
         {
             this.Next = this.DirectoryFiles
@@ -30,8 +27,8 @@ namespace Example.Reader
             {
                 return System.IO.Directory.EnumerateDirectories(this.dir);
             }
-            catch(Exception ex) { return Enumerable.Empty<string>(); }
-            }
+            catch (Exception ex) { return Enumerable.Empty<string>(); }
+        }
 
         public override IEnumerable<string> Files()
         {
@@ -39,10 +36,16 @@ namespace Example.Reader
             {
                 return System.IO.Directory.EnumerateFiles(this.dir);
             }
-            catch(Exception ex) { return Enumerable.Empty<string>(); }    
+            catch (Exception ex) { return Enumerable.Empty<string>(); }
         }
 
-   
+        public override List<string> Invoke(Func<string,bool> action)
+        {
+            var result = this.ListFiles.Where(x => action.Invoke(x)).ToList();
+            result.AddRange(this.Next.SelectMany(x => x.Invoke(action)));
+            return result;
+        }
+
         private Dir() : base(null)
         { }
         public Dir(string dir, ReaderDirAbstract preview) : base(dir)
@@ -51,6 +54,6 @@ namespace Example.Reader
             this.Next = new List<ReaderDirAbstract>();
             this.DirectoryFiles = Directory().ToList();
             this.ListFiles = Files().ToList();
-         }
+        }
     }
 }

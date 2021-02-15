@@ -11,10 +11,11 @@ namespace Example.Abstract
     /// </summary>
     abstract class ReaderDirAbstract
     {
+        public abstract IEnumerable<string> Invoke(Func<string, bool> action);
         public abstract void Create();
         public abstract List<ReaderDirAbstract> Next { set; get; }
         public abstract ReaderDirAbstract Preview { set; get; }
-        public abstract List<string> DirectoryFiles {protected set; get; }
+        public abstract List<string> DirectoryFiles { protected set; get; }
         public abstract List<string> ListFiles { protected set; get; }
         /// <summary>
         /// Метод який вертає файли даної папки
